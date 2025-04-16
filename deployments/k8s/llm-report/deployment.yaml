@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-report-app
+  labels:
+    app: llm-report
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llm-report
+  template:
+    metadata:
+      labels:
+        app: llm-report
+    spec:
+      containers:
+        - name: llm-container
+          image: your-dockerhub-username/llm-report:latest  # 🔄 Replace with your actual Docker image
+          ports:
+            - containerPort: 11434
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"

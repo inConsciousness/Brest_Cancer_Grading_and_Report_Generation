@@ -1,0 +1,16 @@
+__pycache__/
+.venv/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.log
+*.DS_Store
+*.ipynb_checkpoints
+data/
+saved_model/
+ann_model/saved_model/
+llm_report/__pycache__/
+app/__pycache__/
+*.h5

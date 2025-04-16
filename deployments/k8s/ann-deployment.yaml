@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ann-llm-app
+  labels:
+    app: ann-llm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ann-llm
+  template:
+    metadata:
+      labels:
+        app: ann-llm
+    spec:
+      containers:
+      - name: ann-llm-container
+        image: sri111/ann-llm-fastapi:latest  # ✅ Replace with your DockerHub image
+        ports:
+        - containerPort: 8000
+        env:
+        - name: TF_CPP_MIN_LOG_LEVEL
+          value: "2"
+        - name: TF_ENABLE_ONEDNN_OPTS
+          value: "0"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ann-llm-service
+spec:
+  selector:
+    app: ann-llm
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer  # Change to NodePort if on Minikube or Docker Desktop

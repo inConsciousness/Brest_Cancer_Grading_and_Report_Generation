@@ -1,13 +1,23 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
+from fastapi.responses import JSONResponse
+from fastapi.templating import Jinja2Templates
 import pandas as pd
 import io
 import traceback
 from PIL import Image
-from ann_model.predict_ann import predict
-from llm_report.report_generator import generate_report
-from ann_model.image_feature_extractor import extract_features_from_image
 
-app = FastAPI(title="The ANN Project - Brest Cancer Severity Predictor")
+from ann_model.predict_ann import predict
+from ann_model.image_feature_extractor import extract_features_from_image
+from llm_report.report_generator import generate_report
+from monitoring.drift_check import detect_drift
+
+# Prometheus metrics route
+from monitoring import metrics_exporter
+
+app = FastAPI(title="The ANN Project - Breast Cancer Severity Predictor")
+app.include_router(metrics_exporter.router)
+
+templates = Jinja2Templates(directory="ui/templates")
 
 @app.get("/")
 def root():
@@ -38,24 +48,21 @@ async def predict_from_csv(file: UploadFile = File(...)):
     except Exception as e:
         print("❌ ERROR in /predict endpoint:")
         traceback.print_exc()
-        return {
-            "status": "error",
-            "message": "Failed to process CSV file.",
-            "details": str(e)
-        }
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Failed to process CSV file.", "details": str(e)},
+        )
 
 @app.post("/predict-image/")
 async def predict_from_image(file: UploadFile = File(...)):
     try:
         contents = await file.read()
 
-        # Validate image
         try:
             Image.open(io.BytesIO(contents)).verify()
         except Exception as img_err:
             raise ValueError(f"Uploaded file is not a valid image: {img_err}")
 
-        # Extract features and save to CSV
         df = extract_features_from_image(contents)
         image_csv_path = "./data/image_input_converted.csv"
         df.to_csv(image_csv_path, index=False)
@@ -72,17 +79,23 @@ async def predict_from_image(file: UploadFile = File(...)):
                 "report": report
             })
 
-        return {
-            "status": "success",
-            "source": file.filename,
-            "results": response
-        }
+        return {"status": "success", "source": file.filename, "results": response}
 
     except Exception as e:
         print("❌ ERROR in /predict-image endpoint:")
         traceback.print_exc()
-        return {
-            "status": "error",
-            "message": "Failed to process image",
-            "details": str(e)
-        }
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Failed to process image", "details": str(e)},
+        )
+
+@app.get("/drift-ui")
+def render_drift_dashboard(request: Request):
+    try:
+        drift = detect_drift("data/uploaded_input.csv")
+        return templates.TemplateResponse("drift.html", {"request": request, "drift": drift})
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Could not generate drift report: {str(e)}"},
+        )

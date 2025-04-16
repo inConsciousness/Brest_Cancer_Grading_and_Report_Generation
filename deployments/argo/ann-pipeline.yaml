@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ann-app             # 💡 Name shown in ArgoCD UI
+  namespace: argocd         # 💡 Where ArgoCD controller lives
+spec:
+  destination:
+    namespace: default      # 💡 Where your app will be deployed
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    repoURL: https://github.com/inConsciousness/Brest_Cancer_Grading_and_Report_Generation    # 🔁 Replace with your real GitHub repo
+    targetRevision: HEAD
+    path: deployments/k8s    # 🗂️ Path where ann-deployment.yaml and service.yaml are
+  syncPolicy:
+    automated:
+      selfHeal: true         # 🔄 Auto-sync on changes
+      prune: true            # 🧹 Deletes removed Kubernetes objects
+    syncOptions:
+      - CreateNamespace=true # 🧱 Auto-create namespace if needed

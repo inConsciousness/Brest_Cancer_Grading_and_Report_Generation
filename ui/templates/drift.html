@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Feature Drift Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background: #f7f9fc;
+    }
+    h1 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+    }
+    th, td {
+      text-align: left;
+      padding: 8px;
+    }
+    th {
+      background-color: #0073b1;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .good {
+      color: green;
+    }
+    .warn {
+      color: orange;
+    }
+    .bad {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧪 Feature Drift Report</h1>
+  <table>
+    <tr>
+      <th>Feature</th>
+      <th>Status</th>
+    </tr>
+    {% for feature, status in drift.items() %}
+    <tr>
+      <td>{{ feature }}</td>
+      <td class="status {% if '✅' in status %}good{% elif '⚠️' in status %}warn{% elif '🚨' in status %}bad{% endif %}">
+        {{ status }}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

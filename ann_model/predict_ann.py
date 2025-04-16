@@ -4,14 +4,14 @@ import numpy as np
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import StandardScaler
 
-# ✅ Suppress TensorFlow logs
+# ✅ Suppress TensorFlow log verbosity
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
-# ✅ Load model once (not repeatedly)
+# ✅ Load model once globally to avoid reloading on each request
 MODEL_PATH = './ann_model/saved_model/model_ann.h5'
 model = load_model(MODEL_PATH, compile=False)
 
-# ✅ Use a reusable scaler – normally, this should be saved during training for consistency
+# ✅ Initialize scaler (NOTE: In real deployment, load a saved scaler to maintain consistency)
 scaler = StandardScaler()
 
 def predict(input_csv_path):
@@ -22,18 +22,18 @@ def predict(input_csv_path):
         input_csv_path (str): Path to the input CSV file.
 
     Returns:
-        List of tuples: (probability, binary label)
+        List[Tuple[float, int]]: List of (confidence, binary label) predictions.
     """
+    # Read CSV and drop unnecessary columns if they exist
     input_df = pd.read_csv(input_csv_path)
-
-    # Drop irrelevant columns if present
     input_features = input_df.drop(['id', 'diagnosis'], axis=1, errors='ignore')
 
-    # Standardize input features (NOTE: in real-world, use saved scaler)
+    # Scale the input features
     X_scaled = scaler.fit_transform(input_features)
 
-    # Predict probabilities and apply threshold
+    # Perform model prediction
     predictions = model.predict(X_scaled)
-    results = [(float(prob[0]), int(prob[0] > 0.5)) for prob in predictions]
 
+    # Return list of (probability, label)
+    results = [(float(prob[0]), int(prob[0] > 0.5)) for prob in predictions]
     return results

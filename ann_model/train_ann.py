@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.models import Sequential, save_model
 from tensorflow.keras.layers import Dense
+import json  # 📌 for saving stats
 
 df = pd.read_csv('./data/breast-cancer.csv')
 df = df.drop(['id', 'Unnamed: 32'], axis=1)
@@ -32,3 +33,17 @@ model.fit(X_train, y_train, validation_split=0.1, batch_size=10, epochs=50)
 # Save model
 save_model(model, './ann_model/saved_model/model_ann.h5')
 print("✅ Model trained and saved at: ./ann_model/saved_model/model_ann.h5")
+
+# ✅ Save training stats for drift monitoring
+stats = {
+    col: {
+        "mean": float(pd.Series(X_train[:, idx]).mean()),
+        "std": float(pd.Series(X_train[:, idx]).std())
+    }
+    for idx, col in enumerate(X.columns)
+}
+
+with open("monitoring/train_stats.json", "w") as f:
+    json.dump(stats, f, indent=2)
+
+print("📊 Feature stats saved to: monitoring/train_stats.json")
