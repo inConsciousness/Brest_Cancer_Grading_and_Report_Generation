@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ✅ Set environment to suppress TensorFlow logs
+ENV KERAS_BACKEND=tensorflow
 ENV TF_CPP_MIN_LOG_LEVEL=2
 
 # ✅ Install Python dependencies
