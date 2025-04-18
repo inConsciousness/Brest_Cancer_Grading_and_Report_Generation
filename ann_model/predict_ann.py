@@ -1,19 +1,19 @@
 import os
 import pandas as pd
 import numpy as np
+import keras
 from keras.models import load_model
 from sklearn.preprocessing import StandardScaler
-import keras
 
-# ✅ Suppress TensorFlow logs
+# ✅ Suppress TensorFlow logs (INFO & WARNINGS)
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
-# ✅ Load model in backwards-compatible way for .h5 format
+# ✅ Backward-compatible .h5 model loading
 MODEL_PATH = './ann_model/saved_model/model_ann.h5'
 with keras.utils.custom_object_scope({}):
     model = load_model(MODEL_PATH, compile=False)
 
-# ✅ Initialize scaler (NOTE: In real deployment, load a saved scaler for consistency)
+# ✅ Scaler (NOTE: Use saved scaler.pkl in prod)
 scaler = StandardScaler()
 
 def predict(input_csv_path):
@@ -24,18 +24,17 @@ def predict(input_csv_path):
         input_csv_path (str): Path to the input CSV file.
 
     Returns:
-        List[Tuple[float, int]]: List of (confidence, binary label) predictions.
+        List[Tuple[float, int]]: (confidence, label) per sample.
     """
-    # Load and preprocess input
-    input_df = pd.read_csv(input_csv_path)
-    input_features = input_df.drop(['id', 'diagnosis'], axis=1, errors='ignore')
+    # Load CSV, drop irrelevant columns
+    df = pd.read_csv(input_csv_path)
+    features = df.drop(['id', 'diagnosis'], axis=1, errors='ignore')
 
-    # Scale features
-    X_scaled = scaler.fit_transform(input_features)
+    # Standardize features
+    X_scaled = scaler.fit_transform(features)
 
-    # Predict using ANN model
-    predictions = model.predict(X_scaled)
+    # Predict probabilities
+    probs = model.predict(X_scaled)
 
-    # Return (confidence, label) for each sample
-    results = [(float(prob[0]), int(prob[0] > 0.5)) for prob in predictions]
-    return results
+    # Convert to (confidence, binary label)
+    return [(float(p[0]), int(p[0] > 0.5)) for p in probs]

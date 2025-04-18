@@ -7,23 +7,21 @@ __pycache__/
 # Virtual environment
 .venv/
 
-# Swap and logs
+# Swap and log files
 *.swp
 *.swo
 *.log
 
-# MacOS and Jupyter metadata
+# macOS and Jupyter metadata
 .DS_Store
 *.ipynb_checkpoints
 
-# Local data (if not needed)
+# Local development data (ignore unless required in prod)
 data/
 
-# Ignore caches
+# Cache folders
 llm_report/__pycache__/
 app/__pycache__/
 
-# ✅ KEEP model files! Do NOT ignore these:
-# saved_model/
-# ann_model/saved_model/
-# *.h5
+# ✅ KEEP model files – explicitly include your saved .h5 model
+!ann_model/saved_model/model_ann.h5
