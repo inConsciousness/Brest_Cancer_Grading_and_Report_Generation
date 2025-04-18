@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: llm-container
-          image: your-dockerhub-username/llm-report:latest  # 🔄 Replace with your actual Docker image
+          image: srivardhan135/llm-report:latest  # 🔄 Replace with your actual Docker image
           ports:
             - containerPort: 11434
           resources:

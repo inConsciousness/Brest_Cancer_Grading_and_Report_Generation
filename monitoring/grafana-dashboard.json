@@ -1,0 +1,54 @@
+{
+    "id": null,
+    "title": "Breast Cancer Drift Monitoring",
+    "tags": ["drift", "monitoring"],
+    "timezone": "browser",
+    "schemaVersion": 30,
+    "version": 1,
+    "refresh": "10s",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Feature Drift Z-Score",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "feature_drift",
+            "legendFormat": "{{feature}}",
+            "interval": "",
+            "refId": "A"
+          }
+        ],
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 9
+        },
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "nullPointMode": "connected",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "yaxes": [
+          {
+            "format": "short",
+            "label": "Z-Score",
+            "min": "0",
+            "max": "10"
+          },
+          {
+            "format": "short"
+          }
+        ]
+      }
+    ],
+    "templating": {
+      "list": []
+    }
+  }
+  

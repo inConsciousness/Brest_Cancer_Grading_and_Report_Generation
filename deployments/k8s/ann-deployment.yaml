@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ann-llm-container
-        image: sri111/ann-llm-fastapi:latest  # ✅ Replace with your DockerHub image
+        image: srivardhan135/ann-llm-fastapi:latest  # ✅ Replace with your DockerHub image
         ports:
         - containerPort: 8000
         env:
