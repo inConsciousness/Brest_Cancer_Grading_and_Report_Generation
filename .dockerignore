@@ -1,16 +1,29 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-.venv/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
+
+# Virtual environment
+.venv/
+
+# Swap and logs
 *.swp
 *.swo
 *.log
-*.DS_Store
+
+# MacOS and Jupyter metadata
+.DS_Store
 *.ipynb_checkpoints
+
+# Local data (if not needed)
 data/
-saved_model/
-ann_model/saved_model/
+
+# Ignore caches
 llm_report/__pycache__/
 app/__pycache__/
-*.h5
+
+# KEEP model files! Do NOT ignore these:
+# saved_model/
+# ann_model/saved_model/
+# *.h5
