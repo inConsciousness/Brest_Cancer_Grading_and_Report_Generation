@@ -23,7 +23,7 @@ data/
 llm_report/__pycache__/
 app/__pycache__/
 
-# KEEP model files! Do NOT ignore these:
+# ✅ KEEP model files! Do NOT ignore these:
 # saved_model/
 # ann_model/saved_model/
 # *.h5
